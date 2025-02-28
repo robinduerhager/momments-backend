@@ -1,29 +1,29 @@
-version: "3.8"
-
 services:
-  backend:
+  momments-backend:
     build: .
-    container_name: express-app
+    container_name: momments-backend
     ports:
       - "3000:3000"
     env_file:
       - .env
     depends_on:
-      - db
+      - momments-db
 
-  db:
+  momments-db:
     image: postgres:16
-    container_name: postgres-db
-    restart: always
+    container_name: momments-db
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C.UTF-8"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C.UTF-8" # Set UTF-8 Encoding for storing Unicode characters
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - momments_pg_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  momments_pg_data:
