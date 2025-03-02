@@ -1,0 +1,1 @@
+export { discussionController } from './DiscussionController';
