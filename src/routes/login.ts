@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { getPrisma } from '@/db'
-import { JWT_SECRET } from '@/vars'
+import { JWT_SECRET } from '@/utils/vars'
 
 export const login = async (req: Request, res: Response) => {
     const prisma = getPrisma()
@@ -21,7 +21,6 @@ export const login = async (req: Request, res: Response) => {
 
     if (!JWT_SECRET)
         return res.status(500).send({ error: "Something went wrong" })
-
 
     res.send({
         token: await jwt.sign({ userId: user.id }, JWT_SECRET)

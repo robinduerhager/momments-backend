@@ -1,7 +1,8 @@
-require('dotenv').config()
+import 'dotenv/config';
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { isAuthenticated } from '@/middleware/auth'
+import { discussionsRouter } from '@/routes'
 import { login } from '@/routes/login'
 // import * as Minio from 'minio'
 
@@ -25,6 +26,8 @@ app.post('/login', login)
 app.get('/test', (req: Request, res, Response) => {
   return res.send({ message: "success" })
 })
+
+app.use('/discussions', isAuthenticated, discussionsRouter)
 
 // Test authentication middleware
 // app.get('/test', isAuthenticated, async (req: Request, res: Response) => {
@@ -57,6 +60,7 @@ app.get('/test', (req: Request, res, Response) => {
 // app.get('/bassdrums', async (req: Request, res: Response) => {
 //    res.send(await minioClient.presignedGetObject('momments', 'BassDrums30.mp3'))
 // })
+
 
 const PORT = process.env.PORT || 8080;
 

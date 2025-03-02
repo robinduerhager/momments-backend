@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken'
 import { getPrisma } from '@/db'
-import { JWT_SECRET } from "@/vars";
+import { JWT_SECRET } from "@/utils/vars";
 
 // Check if the JWT in the header is actually valid
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,8 +29,6 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     })
 
     // Will be undefined if an error was thrown (i.e. token is invalid)
-    console.log(JwtIsValid)
-
     if (!JwtIsValid)
         return res.status(401).send({ error: "Invalid token" });
 
