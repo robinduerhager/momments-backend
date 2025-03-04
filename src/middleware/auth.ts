@@ -32,6 +32,9 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     if (!JwtIsValid)
         return res.status(401).send({ error: "Invalid token" });
 
+    // Append user id to the request object
+    req.userId = (JwtIsValid as JwtPayload).userId
+
     // Else continue with the next route
     next()
 }

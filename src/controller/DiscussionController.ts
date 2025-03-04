@@ -1,29 +1,30 @@
-import { Discussion } from "@prisma/client";
+import { Discussion, Comment } from "@prisma/client";
 import { getPrisma } from "@/db";
 import { Position } from "@/utils/types";
+import { commentController } from "@/controller";
 
 const prisma = getPrisma()
 
 interface DiscussionController {
     create: (position: Position) => Promise<Discussion>;
-    // getOne: () => Promise<Discussion>;
     getAll: () => Promise<Discussion[]>;
+    getOne: (discussionId: number) => Promise<Discussion | null>;
 }
 
-const createDiscussion = async ({ posX, posY }: Position): Promise<Discussion> => {
+const create = async ({ posX, posY }: Position): Promise<Discussion> => {
     return prisma.discussion.create({ data: {
         posX,
         posY,
     } })
 }
 
-const getAllDiscussions = async (): Promise<Discussion[]> => {
-    return prisma.discussion.findMany()
-}
+const getAll = async (): Promise<Discussion[]> => prisma.discussion.findMany({ include: { comments: true } })
+const getOne = async (discussionId: number) => prisma.discussion.findFirst({ where: { id: discussionId } })
 
 const discussionController : DiscussionController = {
-    create: createDiscussion,
-    getAll: getAllDiscussions
+    create,
+    getAll,
+    getOne
 }
 
 export { discussionController }

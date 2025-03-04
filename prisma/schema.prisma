@@ -17,15 +17,65 @@ model User {
   id    Int     @id @default(autoincrement())
   name  String
   secret String @unique
+  commentIds Int[]  
+  comments Comment[]
+  // discussions Discussion[]
 }
 
 model Discussion {
-  id        Int      @id @default(autoincrement())
-  posX      Int      @default(0)
-  posY      Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // comments   Comment?
+  id         Int      @id @default(autoincrement())
+  posX       Int      @default(0)
+  posY       Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  commentIds Int[]    
+  comments   Comment[]
+  // authorId   Int
+  // author     User     @relation(fields: [authorId], references: [id])
+}
+
+model Comment {
+  id           Int            @id @default(autoincrement())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  publishedAt  DateTime?      // Wird gesetzt, wenn published auf true gesetzt wird
+  published    Boolean        @default(false)
+  authorId     Int            
+  author       User           @relation(fields: [authorId], references: [id])
+  discussionId Int
+  Discussion   Discussion     @relation(fields: [discussionId], references: [id])
+  modules      CommentModule[] // Ein Kommentar kann mehrere Module haben
+}
+
+model CommentModule {
+  id        Int         @id @default(autoincrement())
+  commentId Int
+  comment   Comment        @relation(fields: [commentId], references: [id])
+  type      ModuleType
+  text      TextModule?
+  // audio     AudioModule?
+}
+
+model TextModule {
+  id       Int @id @default(autoincrement())
+  content  String // Text des Kommentars
+  module   CommentModule? @relation(fields: [moduleId], references: [id])
+  moduleId Int @unique
+}
+
+// model AudioModule {
+//   id       Int @id @default(autoincrement())
+//   audioUrl String  // URL zur Audiodatei
+//   duration Int     // Länge der Audiodatei in Sekunden
+//   module   CommentModule? @relation(fields: [moduleId], references: [id])
+//   moduleId Int @unique
+// }
+
+enum ModuleType {
+  TEXT
+  // SPOTIFY
+  // AUDIO
+  // COMPOSITION
 }
 
 // model Post {

@@ -1,2 +1,2 @@
 export { login } from './login';
-export { discussionsRouter } from './discussions';
+export { ApiRouter } from './apirouter';

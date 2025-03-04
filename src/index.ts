@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { isAuthenticated } from '@/middleware/auth'
-import { discussionsRouter } from '@/routes'
+import { ApiRouter } from '@/routes'
 import { login } from '@/routes/login'
 // import * as Minio from 'minio'
 
@@ -22,12 +22,7 @@ app.use(express.json());
 // This route needs to be unauthenticated, since it's the login route
 // and the user will get the jwt for later authentication through this route
 app.post('/login', login)
-
-app.get('/test', (req: Request, res, Response) => {
-  return res.send({ message: "success" })
-})
-
-app.use('/discussions', isAuthenticated, discussionsRouter)
+app.use('/discussions', isAuthenticated, ApiRouter)
 
 // Test authentication middleware
 // app.get('/test', isAuthenticated, async (req: Request, res: Response) => {
