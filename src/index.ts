@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express'
 import cors from 'cors'
+import path from 'path'
 import { isAuthenticated } from '@/middleware/auth'
 import { ApiRouter } from '@/routes'
 import { login } from '@/routes/login'
@@ -16,8 +17,12 @@ import { login } from '@/routes/login'
 const app = express();
 
 // CORS and BodyParser Support
-app.use(cors());
+app.use(cors({
+  origin: '*',
+}));
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 // This route needs to be unauthenticated, since it's the login route
 // and the user will get the jwt for later authentication through this route

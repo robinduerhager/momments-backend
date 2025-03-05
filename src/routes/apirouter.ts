@@ -12,20 +12,32 @@ ApiRouter.post('/', async (req, res) => {
     return res.send(await discussionController.create({ posX, posY }))
 })
 
-// Get all Discussions
+// Get all Discussions (without modules and comments)
+// just for displaying discussions in the workspace
 ApiRouter.get('/', async (_, res) => {
     return res.send(await discussionController.getAll())
 })
 
-// Get all Comments for a Discussion with all modules
-ApiRouter.get('/:discussionId/comments', async (req, res) => {
+ApiRouter.get('/:discussionId', async (req: Request, res) => {
     const discussionId = parseInt(req.params.discussionId)
+    const userId = req.userId
 
-    if (!discussionId)
-        return res.status(400).send({ error: "Discussion ID must be provided" })
-
-    return res.send(await commentController.getAll(discussionId))
+    if (!discussionId || !userId)
+        return res.status(400).send({ error: "Discussion ID and User ID must be provided" })
+    
+    return res.send(await discussionController.getOne(discussionId, userId))
 })
+
+// not used in the frontend right now
+// Get all Comments for a Discussion with all modules
+// ApiRouter.get('/:discussionId/comments', async (req, res) => {
+//     const discussionId = parseInt(req.params.discussionId)
+
+//     if (!discussionId)
+//         return res.status(400).send({ error: "Discussion ID must be provided" })
+
+//     return res.send(await commentController.getAll(discussionId))
+// })
 
 // Get a Comment of a Discussion with all its modules
 ApiRouter.get('/:discussionId/comments/:commentId', async (req, res) => {
@@ -46,6 +58,8 @@ ApiRouter.post('/:discussionId/comments', async (req: Request, res) => {
     if (!discussionId || !authorId)
         return res.status(400).send({ error: "Discussion ID and Author ID must be provided" })
 
+    // Create a new Comment Draft, if none exists for that discussion and author
+    // Else, return the existing draft
     return res.send(await commentController.create({
         authorId,
         discussionId
