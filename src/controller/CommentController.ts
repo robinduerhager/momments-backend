@@ -29,7 +29,7 @@ const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promi
             modules: {
                 include: {
                     text: true,
-                    refSong: true
+                    refsong: true
                 }
             },
             author: {
@@ -55,7 +55,7 @@ const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promi
             modules: {
                 include: {
                     text: true,
-                    refSong: true
+                    refsong: true
                 }
             },
             author: {
@@ -99,7 +99,7 @@ const getOne = async (commentId: number): Promise<Comment | null> => prisma.comm
         modules: {
             include: {
                 text: true,
-                refSong: true
+                refsong: true
             }
         },
         author: {
@@ -123,7 +123,7 @@ const update = async ({ commentId, published, publishedAt }: { commentId: number
             modules: {
                 include: {
                     text: true,
-                    refSong: true
+                    refsong: true
                 }
             }
         }

@@ -54,7 +54,7 @@ model CommentModule {
   comment   Comment        @relation(fields: [commentId], references: [id])
   type      ModuleType
   text      TextModule?
-  refSong   RefSongModule?
+  refsong   RefSongModule?
   // audio     AudioModule?
 }
 
