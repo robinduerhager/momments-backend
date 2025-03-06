@@ -18,9 +18,9 @@ interface CommentModuleController {
 // Create an empty Comment as a Draft
 const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Promise<any> => {
     if (type === $Enums.ModuleType.TEXT) {
-        storeTextModule(commentId, content)
+       return storeTextModule(commentId, content)
     } else if (type === $Enums.ModuleType.REFSONG) {
-        storeRefSongModule(commentId, content)
+        return storeRefSongModule(commentId, content)
     } else {
         throw new Error("Invalid Module Type")
     }
@@ -52,7 +52,7 @@ const storeTextModule = (commentId: number, content: string) => {
                     content
                 }
             },
-        }, include: { comment: true, text: true, refSong: true }
+        }, include: { comment: true, text: true }
     })
 }
 
@@ -61,12 +61,12 @@ const storeRefSongModule = (commentId: number, content: string) => {
         data: {
             commentId,
             type: $Enums.ModuleType.REFSONG,
-            refSong: {
+            refsong: {
                 create: {   // Create the actual Module according to its incoming type
                     content
                 }
             },
-        }
+        }, include: { comment: true, refsong: true }
     })
 }
 
