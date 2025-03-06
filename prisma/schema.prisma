@@ -54,12 +54,20 @@ model CommentModule {
   comment   Comment        @relation(fields: [commentId], references: [id])
   type      ModuleType
   text      TextModule?
+  refSong   RefSongModule?
   // audio     AudioModule?
 }
 
 model TextModule {
   id       Int @id @default(autoincrement())
   content  String // Text des Kommentars
+  module   CommentModule? @relation(fields: [moduleId], references: [id])
+  moduleId Int @unique
+}
+
+model RefSongModule {
+  id       Int @id @default(autoincrement())
+  content  String //Refsong link
   module   CommentModule? @relation(fields: [moduleId], references: [id])
   moduleId Int @unique
 }
@@ -74,7 +82,7 @@ model TextModule {
 
 enum ModuleType {
   TEXT
-  // REFSONGEMBED
+  REFSONG
   // AUDIO
   // COMPOSITION
 }
