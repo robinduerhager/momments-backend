@@ -56,17 +56,18 @@ DiscussionsRouter.post('/:discussionId/comments', async (req: Request, res) => {
 })
 
 // Create new Module for a Comment of a Discussion
-DiscussionsRouter.post('/:discussionId/comments/:commentId/modules', async (req, res) => {
-    const discussionId = parseInt(req.params.discussionId)
-    const commentId = parseInt(req.params.commentId)
-    const { type, content } = req.body
+// DiscussionsRouter.post('/:discussionId/comments/:commentId/modules', async (req, res) => {
+//     const discussionId = parseInt(req.params.discussionId)
+//     const commentId = parseInt(req.params.commentId)
+//     const { type, content } = req.body
 
-    if (!discussionId || !commentId || !type || !content)
-        return res.status(400).send({ error: "Discussion ID, Comment ID, Type and Text must be provided" })
+//     // TODO: This might break with Audio modules
+//     if (!discussionId || !commentId || !type || !content)
+//         return res.status(400).send({ error: "Discussion ID, Comment ID, Type and Content must be provided" })
 
-    return res.send(await commentModuleController.create({
-        commentId,
-        type,
-        content
-    }))
-})
+//     return res.send(await commentModuleController.create({
+//         commentId,
+//         type,
+//         content
+//     }))
+// })

@@ -17,15 +17,13 @@ interface CommentModuleController {
 
 // Create an empty Comment as a Draft
 const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Promise<any> => {
-    return prisma.commentModule.create({ data: {
-        commentId,
-        type,
-        text: {
-            create: {   // Create the actual Module according to its incoming type
-                content
-            }
-        },
-    }, include: { comment: true, text: true } })
+    if (type === $Enums.ModuleType.TEXT) {
+        storeTextModule(commentId, content)
+    } else if (type === $Enums.ModuleType.REFSONG) {
+        storeRefSongModule(commentId, content)
+    } else {
+        throw new Error("Invalid Module Type")
+    }
 }
 
 // Get all Comments for a discussion
@@ -44,7 +42,35 @@ const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Pr
 //     }
 // })
 
-const commentModuleController : CommentModuleController = {
+const storeTextModule = (commentId: number, content: string) => {
+    return prisma.commentModule.create({
+        data: {
+            commentId,
+            type: $Enums.ModuleType.TEXT,
+            text: {
+                create: {   // Create the actual Module according to its incoming type
+                    content
+                }
+            },
+        }, include: { comment: true, text: true, refSong: true }
+    })
+}
+
+const storeRefSongModule = (commentId: number, content: string) => {
+    return prisma.commentModule.create({
+        data: {
+            commentId,
+            type: $Enums.ModuleType.REFSONG,
+            refSong: {
+                create: {   // Create the actual Module according to its incoming type
+                    content
+                }
+            },
+        }
+    })
+}
+
+const commentModuleController: CommentModuleController = {
     create,
     // getAll,
     // getOne

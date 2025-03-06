@@ -45,7 +45,8 @@ const getOne = async (discussionId: number, userId: number) => {
                     },
                     modules: {
                         include: {
-                            text: true
+                            text: true,
+                            refSong: true
                         }
                     }
                 },
