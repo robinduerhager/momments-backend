@@ -1,3 +1,3 @@
-export { discussionController } from './DiscussionController';
-export { commentController } from './CommentController';
-export { commentModuleController } from './CommentModuleController';
+export { discussionController } from './discussionController';
+export { commentController } from './commentController';
+export { commentModuleController } from './commentModuleController';

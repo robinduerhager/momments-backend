@@ -4,11 +4,11 @@ import { Position } from "@/utils/types";
 
 const prisma = getPrisma()
 
-interface DiscussionController {
-    create: (position: Position) => Promise<Discussion>;
-    getAll: () => Promise<Discussion[]>;
-    getOne: (discussionId: number, userId: number) => Promise<Discussion | null>;
-}
+// interface DiscussionController {
+//     create: (position: Position) => Promise<Discussion>;
+//     getAll: () => Promise<Discussion[]>;
+//     getOne: (discussionId: number, userId: number) => Promise<Discussion | null>;
+// }
 
 const create = async ({ posX, posY }: Position): Promise<Discussion> => {
     return prisma.discussion.create({
@@ -48,14 +48,18 @@ const getOne = async (discussionId: number, userId: number) => {
                             text: true
                         }
                     }
-                }
+                },
+                orderBy: [
+                    { published: 'desc' },  // Sort comments, so that the unpublished draft is last in the list
+                    { publishedAt: 'asc' }  // Also Sort by publishedAt Date, so the newest published comment is last in the list of the published comments
+                ]
             }
         }
     }
     )
 }
 
-const discussionController: DiscussionController = {
+const discussionController = {
     create,
     getAll,
     getOne

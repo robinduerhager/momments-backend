@@ -8,16 +8,15 @@ type CreateCommentArgs = {
     discussionId: number
 }
 
-interface CommentController {
-    create: (input: CreateCommentArgs) => Promise<Comment>;
-    getAll: (discussionId: number) => Promise<Comment[]>;
-    getOne: (commentId: number) => Promise<Comment | null>;
-}
+// interface CommentController {
+//     create: (input: CreateCommentArgs) => Promise<Comment>;
+//     getAll: (discussionId: number) => Promise<Comment[]>;
+//     getOne: (commentId: number) => Promise<Comment | null>;
+// }
 
 // Create an empty Comment as a Draft
 const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promise<Comment> => {
     // Check if the author already has a draft in this discussion
-    // if yes, return that draft
     const draft = await prisma.comment.findFirst({
         where: {
             AND: [
@@ -27,24 +26,65 @@ const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promi
             ]
         },
         include: {
-            modules: true,
-            author: true
+            modules: {
+                include: {
+                    text: true
+                }
+            },
+            author: {
+                omit: {
+                    secret: true
+                }
+            }
         }
     })
 
+    // if so, return the existing draft
     if (draft)
         return draft
 
     // Else create a new draft
-    return prisma.comment.create({ data: {
-        authorId,
-        discussionId,
-        published: false
-    }, include: { modules: true, author: true } })
+    return prisma.comment.create({
+        data: {
+            authorId,
+            discussionId,
+            published: false
+        },
+        include: {
+            modules: {
+                include: {
+                    text: true
+                }
+            },
+            author: {
+                omit: {
+                    secret: true
+                }
+            }
+        }
+    })
 }
 
+// Not used in code currently, comments get fetched as well, when a "detailed discussion" is fetched
 // Get all Comments for a discussion
-const getAll = async (discussionId: number): Promise<Comment[]> => prisma.comment.findMany({ where: { discussionId }, include: { modules: { include: { text: true } }, author: true }, orderBy: { published: 'asc' } })
+// const getAll = async (discussionId: number): Promise<Comment[]> => {
+//     return prisma.comment.findMany({
+//         where: {
+//             discussionId
+//         },
+//         include: {
+//             modules: { include: { text: true } },
+//             author: {
+//                 omit: {
+//                     secret: true
+//                 }
+//             }
+//         },
+//         orderBy: [
+//             { published: 'asc' }
+//         ]
+//     })
+// }
 
 // Get one Comment for a discussion
 const getOne = async (commentId: number): Promise<Comment | null> => prisma.comment.findFirst({
@@ -54,15 +94,43 @@ const getOne = async (commentId: number): Promise<Comment | null> => prisma.comm
         ]
     },
     include: {
-        modules: true,
-        author: true
+        modules: {
+            include: {
+                text: true
+            }
+        },
+        author: {
+            omit: {
+                secret: true
+            }
+        }
     }
 })
 
-const commentController : CommentController = {
+const update = async ({ commentId, published, publishedAt }: { commentId: number, published: boolean, publishedAt: Date }): Promise<Comment> => {
+    return prisma.comment.update({
+        where: { id: commentId },
+        data: { published, publishedAt },
+        include: {
+            author: {
+                omit: {
+                    secret: true
+                }
+            },
+            modules: {
+                include: {
+                    text: true
+                }
+            }
+        }
+    })
+}
+
+const commentController = {
     create: createDraft,
-    getAll,
-    getOne
+    // getAll,
+    getOne,
+    update
 }
 
 export { commentController }
