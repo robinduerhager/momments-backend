@@ -74,7 +74,7 @@ model TextModule {
 
 enum ModuleType {
   TEXT
-  // SPOTIFY
+  // REFSONGEMBED
   // AUDIO
   // COMPOSITION
 }
