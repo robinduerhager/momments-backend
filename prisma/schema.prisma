@@ -31,6 +31,7 @@ model Discussion {
   updatedAt  DateTime @updatedAt
   commentIds Int[]    
   comments   Comment[]
+  readBy     Int[]    // User-IDs, die die Diskussion gelesen haben
   // authorId   Int
   // author     User     @relation(fields: [authorId], references: [id])
 }
