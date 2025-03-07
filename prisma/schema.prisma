@@ -62,14 +62,14 @@ model TextModule {
   id       Int @id @default(autoincrement())
   content  String // Text des Kommentars
   module   CommentModule? @relation(fields: [moduleId], references: [id])
-  moduleId Int @unique
+  moduleId Int? @unique
 }
 
 model RefSongModule {
   id       Int @id @default(autoincrement())
   content  String //Refsong link
   module   CommentModule? @relation(fields: [moduleId], references: [id])
-  moduleId Int @unique
+  moduleId Int? @unique
 }
 
 // model AudioModule {

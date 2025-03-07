@@ -1,5 +1,5 @@
 import express, { Request } from 'express'
-import { commentController, commentModuleController } from '@/controller'
+import { commentController } from '@/controller'
 export const CommentsRouter = express.Router()
 
 // Get a Comment of a Discussion with all its modules
@@ -28,17 +28,18 @@ CommentsRouter.patch('/:commentId', async (req, res) => {
     }))
 })
 
-CommentsRouter.post('/:commentId/modules', async (req, res) => {
-    const commentId = parseInt(req.params.commentId)
-    const { type, content } = req.body
+// Initialize new, empty Comment for a Discussion
+CommentsRouter.post('/', async (req: Request, res) => {
+    const discussionId: number = req.body.discussionId
+    const authorId = req.userId
 
-    // TODO: This might break with Audio modules
-    if (!commentId || !type || !content)
-        return res.status(400).send({ error: "Discussion ID, Comment ID, Type and Content must be provided" })
+    if (!discussionId || !authorId)
+        return res.status(400).send({ error: "Discussion ID and Author ID must be provided" })
 
-    return res.send(await commentModuleController.create({
-        commentId,
-        type,
-        content
+    // Create a new Comment Draft, if none exists for that discussion and author
+    // Else, return the existing draft
+    return res.send(await commentController.create({
+        authorId,
+        discussionId
     }))
 })

@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import path from 'path'
 import { isAuthenticated } from '@/middleware/auth'
-import { CommentsRouter, DiscussionsRouter } from '@/routes'
+import { CommentsRouter, DiscussionsRouter, CommentModulesRouter } from '@/routes'
 import { login, me } from '@/routes/userRoutes'
 // import * as Minio from 'minio'
 
@@ -27,9 +27,11 @@ app.use(express.static(path.join(__dirname, 'public')))
 // This route needs to be unauthenticated, since it's the login route
 // and the user will get the jwt for later authentication through this route
 app.post('/login', login)
+
 app.use('/me', isAuthenticated, me)
 app.use('/discussions', isAuthenticated, DiscussionsRouter)
 app.use('/comments', isAuthenticated, CommentsRouter)
+app.use('/modules', isAuthenticated, CommentModulesRouter)
 
 // Test authentication middleware
 // app.get('/test', isAuthenticated, async (req: Request, res: Response) => {

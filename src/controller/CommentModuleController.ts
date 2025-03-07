@@ -11,6 +11,7 @@ type CreateCommentModuleArgs = {
 
 interface CommentModuleController {
     create: (input: CreateCommentModuleArgs) => Promise<any>;
+    delete: (commentModuleId: number) => Promise<any>;
     // getAll: (discussionId: number) => Promise<Comment[]>;
     // getOne: (commentId: number) => Promise<Comment | null>;
 }
@@ -26,21 +27,10 @@ const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Pr
     }
 }
 
-// Get all Comments for a discussion
-// const getAll = async (discussionId: number): Promise<Comment[]> => prisma.comment.findMany({ where: { discussionId }, include: { modules: true, author: true } })
-
-// Get one Comment for a discussion
-// const getOne = async (commentId: number): Promise<Comment | null> => prisma.comment.findFirst({
-//     where: {
-//         AND: [
-//             { id: commentId },
-//         ]
-//     },
-//     include: {
-//         modules: true,
-//         author: true
-//     }
-// })
+const deleteModule = async (commentModuleId: number) => {
+    // just return the id of the deleted module, so we can display a removal of the module in the frontend as well
+    return prisma.commentModule.delete({ where: { id: commentModuleId }, select: { id: true } })
+}
 
 const storeTextModule = (commentId: number, content: string) => {
     return prisma.commentModule.create({
@@ -72,6 +62,7 @@ const storeRefSongModule = (commentId: number, content: string) => {
 
 const commentModuleController: CommentModuleController = {
     create,
+    delete: deleteModule
     // getAll,
     // getOne
 }
