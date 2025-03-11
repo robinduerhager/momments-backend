@@ -14,88 +14,83 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  secret String @unique
-  avatar String
-  commentIds Int[]  
-  comments Comment[]
+  id         Int       @id @default(autoincrement())
+  name       String
+  secret     String    @unique
+  avatar     String
+  commentIds Int[]
+  comments   Comment[]
   // discussions Discussion[]
 }
 
 model Discussion {
-  id         Int      @id @default(autoincrement())
-  posX       Int      @default(0)
-  posY       Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  commentIds Int[]    
+  id         Int       @id @default(autoincrement())
+  posX       Int       @default(0)
+  posY       Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  commentIds Int[]
   comments   Comment[]
-  readBy     Int[]    // User-IDs, die die Diskussion gelesen haben
+  readBy     Int[] // User-IDs, die die Diskussion gelesen haben
   // authorId   Int
   // author     User     @relation(fields: [authorId], references: [id])
 }
 
 model Comment {
-  id           Int            @id @default(autoincrement())
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  publishedAt  DateTime?      // Wird gesetzt, wenn published auf true gesetzt wird
-  published    Boolean        @default(false)
-  authorId     Int            
-  author       User           @relation(fields: [authorId], references: [id])
+  id           Int             @id @default(autoincrement())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  publishedAt  DateTime? // Wird gesetzt, wenn published auf true gesetzt wird
+  published    Boolean         @default(false)
+  authorId     Int
+  author       User            @relation(fields: [authorId], references: [id])
   discussionId Int
-  Discussion   Discussion     @relation(fields: [discussionId], references: [id])
+  Discussion   Discussion      @relation(fields: [discussionId], references: [id])
   modules      CommentModule[] // Ein Kommentar kann mehrere Module haben
 }
 
 model CommentModule {
-  id        Int         @id @default(autoincrement())
+  id        Int                 @id @default(autoincrement())
   commentId Int
-  comment   Comment        @relation(fields: [commentId], references: [id])
+  comment   Comment             @relation(fields: [commentId], references: [id])
   type      ModuleType
   text      TextModule?
   refsong   RefSongModule?
-  // audio     AudioModule?
+  audio     AudioMessageModule?
 }
 
 model TextModule {
-  id       Int @id @default(autoincrement())
+  id       Int            @id @default(autoincrement())
   content  String // Text des Kommentars
   module   CommentModule? @relation(fields: [moduleId], references: [id])
-  moduleId Int? @unique
+  moduleId Int?           @unique
 }
 
 model RefSongModule {
-  id       Int @id @default(autoincrement())
+  id       Int            @id @default(autoincrement())
   content  String //Refsong link
   module   CommentModule? @relation(fields: [moduleId], references: [id])
-  moduleId Int? @unique
+  moduleId Int?           @unique
 }
 
-// model AudioModule {
-//   id       Int @id @default(autoincrement())
-//   audioUrl String  // URL zur Audiodatei
-//   duration Int     // Länge der Audiodatei in Sekunden
-//   module   CommentModule? @relation(fields: [moduleId], references: [id])
-//   moduleId Int @unique
-// }
+model AudioMessageModule {
+  id          Int            @id @default(autoincrement())
+  audioFile   AudioFile      @relation(fields: [audioFileId], references: [id])
+  audioFileId Int            @unique
+  module      CommentModule? @relation(fields: [moduleId], references: [id])
+  moduleId    Int?           @unique
+}
+
+model AudioFile {
+  id            Int                 @id @default(autoincrement())
+  fileName      String
+  audioModule   AudioMessageModule?
+  audioModuleId Int?
+}
 
 enum ModuleType {
   TEXT
   REFSONG
-  // AUDIO
+  AUDIOMESSAGE
   // COMPOSITION
 }
-
-// model Post {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   title     String
-//   content   String?
-//   published Boolean  @default(false)
-//   viewCount Int      @default(0)
-//   author    User?    @relation(fields: [authorId], references: [id])
-//   authorId  Int?
-// }

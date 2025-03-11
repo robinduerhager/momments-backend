@@ -1,3 +1,4 @@
-export { discussionController } from './discussionController';
-export { commentController } from './commentController';
-export { commentModuleController } from './commentModuleController';
+export { default as discussionController } from './discussionController';
+export { default as commentController } from './commentController';
+export { default as commentModuleController } from './commentModuleController';
+export { default as audioFileController } from './audioFileController';

@@ -74,7 +74,12 @@ const getOne = async (discussionId: number, userId: number) => {
                     modules: {
                         include: {
                             text: true,
-                            refsong: true
+                            refsong: true,
+                            audio: {
+                                include: {
+                                    audioFile: true
+                                }
+                            }
                         }
                     }
                 },
@@ -90,7 +95,6 @@ const getOne = async (discussionId: number, userId: number) => {
 
 const purgeReadBy = async (discussionId: number, userId?: number) => {
     const newReadBy = userId ? [userId] : []
-    console.log(newReadBy)
     const isPurged =  await prisma.discussion.update({
         where: {
             id: discussionId
@@ -108,12 +112,10 @@ const purgeReadBy = async (discussionId: number, userId?: number) => {
         return false
 }
 
-const discussionController = {
+export default {
     create,
     getAll,
     getOne,
     purgeReadBy
 }
-
-export { discussionController }
 

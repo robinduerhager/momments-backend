@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express'
 import cors from 'cors'
 import path from 'path'
 import { isAuthenticated } from '@/middleware/auth'
-import { CommentsRouter, DiscussionsRouter, CommentModulesRouter } from '@/routes'
+import { CommentsRouter, DiscussionsRouter, CommentModulesRouter, AudioFileRouter } from '@/routes'
 import { login, me } from '@/routes/userRoutes'
 // import * as Minio from 'minio'
 
@@ -32,6 +32,7 @@ app.use('/me', isAuthenticated, me)
 app.use('/discussions', isAuthenticated, DiscussionsRouter)
 app.use('/comments', isAuthenticated, CommentsRouter)
 app.use('/modules', isAuthenticated, CommentModulesRouter)
+app.use('/audiofiles', isAuthenticated, AudioFileRouter)
 
 // Test authentication middleware
 // app.get('/test', isAuthenticated, async (req: Request, res: Response) => {

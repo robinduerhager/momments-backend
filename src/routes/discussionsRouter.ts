@@ -1,5 +1,6 @@
 import express, { Request } from 'express'
 import { discussionController, commentController, commentModuleController } from '@/controller'
+import { presignedGetFileUrl } from '@/db'
 export const DiscussionsRouter = express.Router()
 
 // Create new, empty Discussion
@@ -23,7 +24,7 @@ DiscussionsRouter.get('/', async (req: Request, res) => {
 
     if (!userId)
         return res.status(500).send({ error: "Something went wrong" })
-    
+
     const discussions = await discussionController.getAll()
 
     // Convert readBy from an array of ids to a boolean value
@@ -37,7 +38,7 @@ DiscussionsRouter.get('/', async (req: Request, res) => {
     return res.send(result)
 })
 
-// Get one Discussion
+// Get one (the active) Discussion (with all comments and modules)
 DiscussionsRouter.get('/:discussionId', async (req: Request, res) => {
     const discussionId = parseInt(req.params.discussionId)
     const userId = req.userId
@@ -47,6 +48,20 @@ DiscussionsRouter.get('/:discussionId', async (req: Request, res) => {
 
     if (!userId)
         return res.status(500).send({ error: "Something went wrong" })
-    
-    return res.send(await discussionController.getOne(discussionId, userId))
+
+    const activeDiscussion = await discussionController.getOne(discussionId, userId)
+
+    if (activeDiscussion) {
+        for (const comment of activeDiscussion.comments) {
+            for (const module of comment.modules) {
+                if (module.type !== 'AUDIOMESSAGE')
+                    continue
+
+                // convert audioFileName to a presigned get URL for the frontend
+                module.audio!.audioFile.fileName = await presignedGetFileUrl(module.audio!.audioFile.fileName)
+            }
+        }
+    }
+
+    return res.send(activeDiscussion)
 })

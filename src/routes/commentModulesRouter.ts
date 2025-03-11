@@ -1,19 +1,41 @@
+import { $Enums } from '@prisma/client'
+import { presignedGetFileUrl } from '@/db'
 import express, { Request } from 'express'
 import { commentModuleController } from '@/controller'
 export const CommentModulesRouter = express.Router()
 
 // Create a module for a comment
+// Text and RefSong need: type, commentId, content
+// AudioMessage needs: type, commentId, audioFileName
 CommentModulesRouter.post('/', async (req: Request, res) => {
-    const { type, content, commentId } = req.body
+    const { type, commentId } = req.body
 
-    // TODO: This might break with Audio modules
-    if (!commentId || !type || !content)
-        return res.status(400).send({ error: "Discussion ID, Comment ID, Type and Content must be provided" })
+    if (!commentId || !type)
+        return res.status(400).send({ error: "Discussion ID, Comment ID and Type must be provided" })
+
+    // AudioMessage needs a different creation approach
+    if (type === $Enums.ModuleType.AUDIOMESSAGE) {
+        if (!req.body.audioFileName)
+            return res.status(400).send({ error: "Audio File Name must be provided that matches an S3 stored object for creating Audio Message Modules" })
+
+        const audioMessageModule = await commentModuleController.create({
+            commentId,
+            type,
+            content: req.body.audioFileName
+        })
+    
+        if (!audioMessageModule)
+            return res.status(500).send({ error: "Something went wrong" })
+    
+        // instead of returning the simple file name, we return a presigned get URL of the file
+        audioMessageModule.audio.audioFile.fileName = await presignedGetFileUrl(audioMessageModule.audio.audioFile.fileName)
+        return res.send(audioMessageModule)
+    }
 
     return res.send(await commentModuleController.create({
         commentId,
         type,
-        content
+        content: req.body.content
     }))
 })
 
