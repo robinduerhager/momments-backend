@@ -8,6 +8,15 @@ const getUploadUrl = async () => {
     return presignedPutFileUrl('audio/ogg; codecs=opus') // We only use audio files in ogg and opus codec format
 }
 
+const create = async (fileName: string) => {
+    return prisma.audioFile.create({
+        data: {
+            fileName
+        }
+    })
+}
+
 export default {
-    getUploadUrl
+    getUploadUrl,
+    create
 }

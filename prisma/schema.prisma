@@ -45,52 +45,71 @@ model Comment {
   authorId     Int
   author       User            @relation(fields: [authorId], references: [id])
   discussionId Int
-  Discussion   Discussion      @relation(fields: [discussionId], references: [id])
+  Discussion   Discussion      @relation(fields: [discussionId], references: [id], onDelete: Cascade)
   modules      CommentModule[] // Ein Kommentar kann mehrere Module haben
 }
 
 model CommentModule {
-  id        Int                 @id @default(autoincrement())
-  commentId Int
-  comment   Comment             @relation(fields: [commentId], references: [id])
-  type      ModuleType
-  text      TextModule?
-  refsong   RefSongModule?
-  audio     AudioMessageModule?
+  id          Int                 @id @default(autoincrement())
+  commentId   Int
+  comment     Comment             @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  type        ModuleType
+  text        TextModule?
+  refsong     RefSongModule?
+  audio       AudioMessageModule?
+  composition CompositionModule?
 }
 
 model TextModule {
   id       Int            @id @default(autoincrement())
   content  String // Text des Kommentars
-  module   CommentModule? @relation(fields: [moduleId], references: [id])
+  module   CommentModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId Int?           @unique
 }
 
 model RefSongModule {
   id       Int            @id @default(autoincrement())
   content  String //Refsong link
-  module   CommentModule? @relation(fields: [moduleId], references: [id])
+  module   CommentModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId Int?           @unique
 }
 
 model AudioMessageModule {
   id          Int            @id @default(autoincrement())
-  audioFile   AudioFile      @relation(fields: [audioFileId], references: [id])
-  audioFileId Int            @unique
-  module      CommentModule? @relation(fields: [moduleId], references: [id])
+  audioFile   AudioFile?     @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+  audioFileId Int?           @unique
+  module      CommentModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId    Int?           @unique
+}
+
+model CompositionModule {
+  id          Int            @id @default(autoincrement())
+  audioTracks AudioTrack[]
+  module      CommentModule? @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId    Int?           @unique
+}
+
+model AudioTrack {
+  id                  Int                @id @default(autoincrement())
+  audioFile           AudioFile?         @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+  audioFileId         Int?               @unique
+  startPosition       Float?
+  startCue            Float? // Cutting the AudioFile from the Start
+  endCue              Float? // Cutting the AudioFile from the End
+  composition         CompositionModule? @relation(fields: [compositionModuleId], references: [id], onDelete: Cascade)
+  compositionModuleId Int?               
 }
 
 model AudioFile {
   id            Int                 @id @default(autoincrement())
   fileName      String
   audioModule   AudioMessageModule?
-  audioModuleId Int?
+  audioTrack    AudioTrack?
 }
 
 enum ModuleType {
   TEXT
   REFSONG
   AUDIOMESSAGE
-  // COMPOSITION
+  COMPOSITION
 }

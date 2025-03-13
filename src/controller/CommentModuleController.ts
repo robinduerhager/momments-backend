@@ -6,7 +6,14 @@ const prisma = getPrisma()
 type CreateCommentModuleArgs = {
     commentId: number
     type: $Enums.ModuleType
-    content: string
+    content: string | CompositionArgs[]
+}
+
+type CompositionArgs = {
+    fileId: number
+    startPosition: number,
+    startCue: number,
+    endCue: number
 }
 
 // interface CommentModuleController {
@@ -19,11 +26,13 @@ type CreateCommentModuleArgs = {
 // Create an empty Comment as a Draft
 const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Promise<any> => {
     if (type === $Enums.ModuleType.TEXT) {
-        return storeTextModule(commentId, content)
+        return storeTextModule(commentId, content as string)
     } else if (type === $Enums.ModuleType.REFSONG) {
-        return storeRefSongModule(commentId, content)
+        return storeRefSongModule(commentId, content as string)
     } else if (type === $Enums.ModuleType.AUDIOMESSAGE) {
-        return storeAudioMessageModule(commentId, content)
+        return storeAudioMessageModule(commentId, content as string)
+    } else if (type === $Enums.ModuleType.COMPOSITION) {
+        return storeCompositionModule(commentId, content as CompositionArgs[])
     } else {
         throw new Error("Invalid Module Type")
     }
@@ -78,6 +87,52 @@ const storeAudioMessageModule = (commentId: number, audioFileName: string) => {
                 }
             },
         }, include: { comment: true, audio: { include: { audioFile: { select: { fileName: true } } } } }
+    })
+}
+
+const storeCompositionModule = (commentId: number, tracks: CompositionArgs[]) => {
+    // Transform tracks into a form that prisma needs
+    const storableTracks = tracks.map(track => (
+        {
+            audioFileId: track.fileId,
+            startPosition: track.startPosition,
+            startCue: track.startCue,
+            endCue: track.endCue
+        }
+    ))
+
+    // Create a new Composition Module and create the audioTracks
+    // Directly connect audioTracks to the corresponding audioFiles IDs
+    return prisma.commentModule.create({
+        data: {
+            commentId,
+            type: $Enums.ModuleType.COMPOSITION,
+            composition: {
+                create: {
+                    audioTracks: {
+                        createMany: {
+                            data: storableTracks
+                        }
+                    }
+                }
+            }
+        },
+        include: {
+            comment: true,
+            composition: {
+                include: {
+                    audioTracks: {
+                        include: {
+                            audioFile: {
+                                select: {
+                                    fileName: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     })
 }
 

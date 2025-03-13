@@ -32,6 +32,24 @@ CommentModulesRouter.post('/', async (req: Request, res) => {
         return res.send(audioMessageModule)
     }
 
+    if (type === $Enums.ModuleType.COMPOSITION) {
+        if (!req.body.content)
+            return res.status(400).send({ error: "Composition content must be provided for creating Composition Modules" })
+
+        const compositionModule = await commentModuleController.create({
+            commentId,
+            type,
+            content: req.body.content
+        })
+
+        // return the presigned S3 get URL for each audio file in the composition
+        for (const audioTrack of compositionModule.composition.audioTracks) {
+            audioTrack.audioFile = await presignedGetFileUrl(audioTrack.audioFile.fileName)
+        }
+
+        return res.send(compositionModule)
+    }
+
     return res.send(await commentModuleController.create({
         commentId,
         type,

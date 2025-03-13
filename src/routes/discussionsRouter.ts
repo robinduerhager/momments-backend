@@ -28,6 +28,7 @@ DiscussionsRouter.get('/', async (req: Request, res) => {
     const discussions = await discussionController.getAll()
 
     // Convert readBy from an array of ids to a boolean value
+    // IF the userId is included in the readBy array, set readBy to true
     const result = discussions.map(discussion => {
         return {
             ...discussion,
@@ -51,10 +52,14 @@ DiscussionsRouter.get('/:discussionId', async (req: Request, res) => {
 
     const activeDiscussion = await discussionController.getOne(discussionId, userId)
 
+    // Transform the audioFileName to a presigned get URL for the frontend
     if (activeDiscussion) {
         for (const comment of activeDiscussion.comments) {
             for (const module of comment.modules) {
                 if (module.type !== 'AUDIOMESSAGE')
+                    continue
+
+                if (!module.audio?.audioFile)
                     continue
 
                 // convert audioFileName to a presigned get URL for the frontend
