@@ -16,14 +16,8 @@ type CompositionArgs = {
     endCue: number
 }
 
-// interface CommentModuleController {
-// create: (input: CreateCommentModuleArgs) => Promise<any>;
-// delete: (commentModuleId: number) => Promise<any>;
-// getAll: (discussionId: number) => Promise<Comment[]>;
-// getOne: (commentId: number) => Promise<Comment | null>;
-// }
-
 // Create an empty Comment as a Draft
+// Promise<any> is bad practice, but somehow TypeScript infers the wrong type here
 const create = async ({ commentId, type, content }: CreateCommentModuleArgs): Promise<any> => {
     if (type === $Enums.ModuleType.TEXT) {
         return storeTextModule(commentId, content as string)
@@ -123,11 +117,7 @@ const storeCompositionModule = (commentId: number, tracks: CompositionArgs[]) =>
                 include: {
                     audioTracks: {
                         include: {
-                            audioFile: {
-                                select: {
-                                    fileName: true
-                                }
-                            }
+                            audioFile: true
                         }
                     }
                 }

@@ -44,7 +44,7 @@ CommentModulesRouter.post('/', async (req: Request, res) => {
 
         // return the presigned S3 get URL for each audio file in the composition
         for (const audioTrack of compositionModule.composition.audioTracks) {
-            audioTrack.audioFile = await presignedGetFileUrl(audioTrack.audioFile.fileName)
+            audioTrack.audioFile.fileName = await presignedGetFileUrl(audioTrack.audioFile.fileName)
         }
 
         return res.send(compositionModule)

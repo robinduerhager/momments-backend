@@ -79,6 +79,15 @@ const getOne = async (discussionId: number, userId: number) => {
                                 include: {
                                     audioFile: true
                                 }
+                            },
+                            composition: {
+                                include: {
+                                    audioTracks: {
+                                        include: {
+                                            audioFile: true
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

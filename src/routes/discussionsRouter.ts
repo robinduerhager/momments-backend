@@ -1,3 +1,4 @@
+import { $Enums } from '@prisma/client'
 import express, { Request } from 'express'
 import { discussionController, commentController, commentModuleController } from '@/controller'
 import { presignedGetFileUrl } from '@/db'
@@ -56,14 +57,26 @@ DiscussionsRouter.get('/:discussionId', async (req: Request, res) => {
     if (activeDiscussion) {
         for (const comment of activeDiscussion.comments) {
             for (const module of comment.modules) {
-                if (module.type !== 'AUDIOMESSAGE')
-                    continue
+                if (module.type === $Enums.ModuleType.AUDIOMESSAGE) {
+                    if (!module.audio?.audioFile)
+                        continue
 
-                if (!module.audio?.audioFile)
-                    continue
+                    // convert audioFileName to a presigned get URL for the frontend, for the Composition module
+                    module.audio!.audioFile.fileName = await presignedGetFileUrl(module.audio!.audioFile.fileName)
+                } else if (module.type === $Enums.ModuleType.COMPOSITION) {
+                    if (!module.composition?.audioTracks)
+                        continue
 
-                // convert audioFileName to a presigned get URL for the frontend
-                module.audio!.audioFile.fileName = await presignedGetFileUrl(module.audio!.audioFile.fileName)
+                    if (module.composition.audioTracks.length <= 0)
+                        continue
+
+                    for (const audioTrack of module.composition.audioTracks) {
+                        if (audioTrack.audioFile)
+                            audioTrack.audioFile.fileName = await presignedGetFileUrl(audioTrack.audioFile.fileName)
+                    }
+                } else {
+                    continue
+                }
             }
         }
     }
