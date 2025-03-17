@@ -1,7 +1,13 @@
-FROM node:18
+FROM node:22.11.0-alpine AS builder
 WORKDIR /app
+COPY package*.json ./
+RUN npm ci
 COPY . .
-# COPY package.json package-lock.json ./
-RUN npm install --production
 RUN npm run build
-CMD ["node", "dist/index.js"]
+
+FROM node:22.11.0-alpine AS production
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+CMD ["npm", "start"]

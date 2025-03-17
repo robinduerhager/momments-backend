@@ -1,1 +1,1 @@
-export const { JWT_SECRET } = process.env
+export const { JWT_SECRET, NODE_ENV, DOMAIN } = process.env
