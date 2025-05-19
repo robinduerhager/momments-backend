@@ -8,7 +8,7 @@ Dieses Projekt enthält jeglichen Quellcode für das Backend des Momments-Protot
 2. Gehe in das Projekt per `cd momments-backend`
 3. Kopiere `example.env.development` in `.env` (Gehe sicher, dass die konfigurierte Domain und der Port von `momments-frontend` verwendet wird)
 4. Fülle in `.env` die fehlenden Informationen für die [AWS S3](https://aws.amazon.com/de/s3/) Verbindung aus
-5. Starte über `docker compose up momments-db` die PostgreSQL 16.9 Datenbank. Alternativ kann auch eine eigene lokale PostgreSQL Datenbank verwendet werden.
+5. Starte über `docker compose up -d momments-db` die PostgreSQL 16.9 Datenbank. Alternativ kann auch eine eigene lokale PostgreSQL Datenbank verwendet werden.
 7. Führe `npm install` aus, um alle nötigen NodeJS Module zu installieren
 8. Führe `npx prisma db push` aus, damit die Datenbanktabellen für das Prisma ORM Schema in der Datenbank erstellt werden
 9. Führe `npx prisma db seed` aus, um die Datenbank mit Testnutzern zu füllen
