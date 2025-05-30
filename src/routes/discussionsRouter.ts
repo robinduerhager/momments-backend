@@ -1,10 +1,16 @@
 import { $Enums } from '@prisma/client'
 import express, { Request } from 'express'
-import { discussionController, commentController, commentModuleController } from '@/controller'
+import { discussionController } from '@/controller'
 import { presignedGetFileUrl } from '@/db'
 export const DiscussionsRouter = express.Router()
 
-// Create new, empty Discussion
+/**
+ * @description Route creating new, empty Discussion
+ * @param posX - X position of the new Discussion in the workspace
+ * @param posY - Y position of the new Discussion in the workspace
+ * @returns A Promise that resolves to the created Discussion object without any comments.
+ * @throws 400 if arguments are not provided, 500 if userId was not set in the request object via authorization middleware.
+ */
 DiscussionsRouter.post('/', async (req: Request, res) => {
     const { posX, posY } = req.body
     const userId = req.userId
@@ -18,8 +24,11 @@ DiscussionsRouter.post('/', async (req: Request, res) => {
     return res.send(await discussionController.create({ posX, posY }, userId))
 })
 
-// Get all Discussions (without modules and comments)
-// just for displaying discussions in the workspace
+/**
+ * @description Route getting all Discussions without modules and comments (e.g. for displaying them in the workspace)
+ * @returns A Promise that resolves to the created Discussion object without any comments.
+ * @throws 500 if userId was not set in the request object via authorization middleware.
+ */
 DiscussionsRouter.get('/', async (req: Request, res) => {
     const userId = req.userId
 
@@ -40,13 +49,18 @@ DiscussionsRouter.get('/', async (req: Request, res) => {
     return res.send(result)
 })
 
-// Get one (the active) Discussion (with all comments and modules)
+/**
+ * @description Route for getting one Discussion with all its comments and modules.
+ * @param discussionId - The ID of the Discussion to retrieve.
+ * @returns A Promise that resolves to the specified Discussion object without all comments and modules.
+ * @throws 400 if discussionId was not provided, 500 if userId was not set in the request object via authorization middleware.
+ */
 DiscussionsRouter.get('/:discussionId', async (req: Request, res) => {
     const discussionId = parseInt(req.params.discussionId)
     const userId = req.userId
 
     if (!discussionId)
-        return res.status(400).send({ error: "Discussion ID and User ID must be provided" })
+        return res.status(400).send({ error: "Discussion ID must be provided" })
 
     if (!userId)
         return res.status(500).send({ error: "Something went wrong" })

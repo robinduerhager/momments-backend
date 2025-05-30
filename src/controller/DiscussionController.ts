@@ -1,14 +1,16 @@
-import { Discussion, Comment } from "@prisma/client";
+import { Discussion } from "@prisma/client";
 import { getPrisma } from "@/db";
 import { Position } from "@/utils/types";
 
 const prisma = getPrisma()
 
-// interface DiscussionController {
-//     create: (position: Position) => Promise<Discussion>;
-//     getAll: () => Promise<Discussion[]>;
-//     getOne: (discussionId: number, userId: number) => Promise<Discussion | null>;
-// }
+/**
+ * 
+ * @description Creates a new discussion at the specified position on the canvas and adds the user to its readBy array.
+ * @param position The position of the discussion on the canvas, containing posX and posY coordinates
+ * @param userId The user ID of the user creating the discussion
+ * @returns A Promise that resolves to the created discussion object without any comments.
+ */
 const create = async ({ posX, posY }: Position, userId: number): Promise<Omit<Discussion, 'commentIds'>> => {
     return prisma.discussion.create({
         data: {
@@ -22,8 +24,10 @@ const create = async ({ posX, posY }: Position, userId: number): Promise<Omit<Di
     })
 }
 
-// Get all Discussions without any Comments or Modules
-// We don't need the commentIds here
+/**
+ * @description Fetches all discussions from the database without their associated comments. If comments are needed, use the `getOne` method instead.
+ * @returns A Promise that resolves to an array of discussions without their comments.
+ */
 const getAll = async (): Promise<Omit <Discussion, 'commentIds'>[]> => prisma.discussion.findMany({
     omit: {
         commentIds: true
@@ -32,6 +36,12 @@ const getAll = async (): Promise<Omit <Discussion, 'commentIds'>[]> => prisma.di
 
 // Get one specific Discussion with all its Comments and modules
 // But only include all published comments and the users draft comment, if one exists
+/**
+ * @description Fetches a single discussion by its ID, updates the readBy array to include the provided `userId`, and returns the discussion with all of its comments and modules.
+ * @param discussionId ID of the discussion to fetch from the database.
+ * @param userId ID of the user who is reading the discussion. This ID will be added to the readBy array of the fetched discussion.
+ * @returns A Promise that resolves to the discussion object with its comments, commentModules, excluding the readBy array. The discussion list will be sorted in ascending order by the published date of the comments with unpublished drafts appearing last.
+ */
 const getOne = async (discussionId: number, userId: number) => {
     // First add the userId to the readBy array of the fetched discussion
     const updatedDiscussion = await prisma.discussion.update({
@@ -102,6 +112,13 @@ const getOne = async (discussionId: number, userId: number) => {
     )
 }
 
+/**
+ * 
+ * @description Purges the readBy array of a discussion by setting it to an empty array or to a new array containing only the provided userId.
+ * @param discussionId ID of the discussion to purge the readBy array for
+ * @param userId The user ID which should be kept in the readBy array. If not provided, the readBy array will be set to an empty array.
+ * @returns A Promise that resolves to the modified discussion indicating whether the readBy array was successfully purged or not.
+ */
 const purgeReadBy = async (discussionId: number, userId?: number) => {
     const newReadBy = userId ? [userId] : []
     const isPurged =  await prisma.discussion.update({

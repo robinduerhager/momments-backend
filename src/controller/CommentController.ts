@@ -8,13 +8,12 @@ type CreateCommentArgs = {
     discussionId: number
 }
 
-// interface CommentController {
-//     create: (input: CreateCommentArgs) => Promise<Comment>;
-//     getAll: (discussionId: number) => Promise<Comment[]>;
-//     getOne: (commentId: number) => Promise<Comment | null>;
-// }
-
-// Create an empty Comment as a Draft
+/**
+ * @description Creates a new draft comment for a discussion. If the author already has a draft comment in the discussion, it returns that existing draft instead of creating a new one.
+ * @param authorId The ID of the author creating the draft comment.
+ * @param discussionId The ID of the discussion for which the draft comment is being created.
+ * @returns A Promise that resolves to the created or existing draft comment, including its modules and author information.
+ */
 const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promise<Comment> => {
     // Check if the author already has a draft in this discussion
     const draft = await prisma.comment.findFirst({
@@ -77,28 +76,11 @@ const createDraft = async ({ authorId, discussionId }: CreateCommentArgs): Promi
     })
 }
 
-// Not used in code currently, comments get fetched as well, when a "detailed discussion" is fetched
-// Get all Comments for a discussion
-// const getAll = async (discussionId: number): Promise<Comment[]> => {
-//     return prisma.comment.findMany({
-//         where: {
-//             discussionId
-//         },
-//         include: {
-//             modules: { include: { text: true } },
-//             author: {
-//                 omit: {
-//                     secret: true
-//                 }
-//             }
-//         },
-//         orderBy: [
-//             { published: 'asc' }
-//         ]
-//     })
-// }
-
-// Get one Comment for a discussion
+/**
+ * @description Retrieves a single comment by its ID, including its associated modules and author information.
+ * @param commentId The ID of the comment to retrieve.
+ * @returns A Promise that resolves to the comment if found, or null if no comment with the given ID exists.
+ */
 const getOne = async (commentId: number): Promise<Comment | null> => prisma.comment.findFirst({
     where: {
         AND: [
@@ -125,6 +107,13 @@ const getOne = async (commentId: number): Promise<Comment | null> => prisma.comm
     }
 })
 
+/**
+ * @description Updates a comment's published status and publishedAt date. Right now, this is can only be used to publish a draft comment.
+ * @param commentId The ID of the comment to publish.
+ * @param published The new published status of the comment.
+ * @param publishedAt The date when the comment was published.
+ * @returns A Promise that resolves to the updated comment, including its modules and author information.
+ */
 const update = async ({ commentId, published, publishedAt }: { commentId: number, published: boolean, publishedAt: Date }): Promise<Comment> => {
     return prisma.comment.update({
         where: { id: commentId },
@@ -152,7 +141,6 @@ const update = async ({ commentId, published, publishedAt }: { commentId: number
 
 export default {
     create: createDraft,
-    // getAll,
     getOne,
     update
 }

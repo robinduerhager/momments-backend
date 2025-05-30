@@ -4,14 +4,19 @@ import express, { Request } from 'express'
 import { commentModuleController } from '@/controller'
 export const CommentModulesRouter = express.Router()
 
-// Create a module for a comment
-// Text and RefSong need: type, commentId, content
-// AudioMessage needs: type, commentId, audioFileName
+/**
+ * @description Route for creating a new Comment Module for a comment draft.
+ * @param type The type of the module to be created (e.g., TEXT, REFSONG, AUDIOMESSAGE or COMPOSITION).
+ * @param commentId The ID of the comment to which the module should be added.
+ * @param content The content of the module (e.g. text for Text, RefSong and AudioMessage (S3 fileName) modules, AudioTracks for Composition modules).
+ * @returns A Promise that resolves to the newly created Comment Module object with the associated comment.
+ * @throws 400 if there was no commentId and the right content for the module provided. 500 if something went wrong during the creation process.
+ */
 CommentModulesRouter.post('/', async (req: Request, res) => {
     const { type, commentId } = req.body
 
     if (!commentId || !type)
-        return res.status(400).send({ error: "Discussion ID, Comment ID and Type must be provided" })
+        return res.status(400).send({ error: "Comment ID and Type must be provided" })
 
     // AudioMessage needs a different creation approach
     if (type === $Enums.ModuleType.AUDIOMESSAGE) {
@@ -57,6 +62,12 @@ CommentModulesRouter.post('/', async (req: Request, res) => {
     }))
 })
 
+/**
+ * @description Route for deleting a specific Comment Module by its ID.
+ * @param commentModuleId The ID of the Comment Module which should be deleted.
+ * @returns A Promise that resolves to the ID of the deleted Module.
+ * @throws 400 if commentModuleId was not provided.
+ */
 CommentModulesRouter.delete('/', async (req: Request, res) => {
     const { commentModuleId } = req.body
 

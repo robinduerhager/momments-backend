@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express"
 import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken'
-import { getPrisma } from '@/db'
 import { JWT_SECRET } from "@/utils/vars";
 
 // Check if the JWT in the header is actually valid
