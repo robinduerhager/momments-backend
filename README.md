@@ -17,7 +17,7 @@ Die Bilder `testuser1.png` und `testuser2.png` im `public` Ordner wurden der Web
 10. Führe `npm run dev` aus
 
 ## Projektstruktur
-Im Folgenden wird die Ordnerstruktur dargestellt und über Kommentare kurz und prägnant erläutert, um die Erweiterbarkeit dieses Projekts zu verbessern. Weitere Dateien, wie die `package*.json` Dateien und diese `README.md` Datei wurden aus Platzgründen ausgelassen. Die `package.json` definiert dieses NodeJS Projekt und stellt beispielsweise alle verwendeten Bibliotheken und ihre Versionen dar.
+Im Folgenden wird die Ordnerstruktur dargestellt und über Kommentare kurz und prägnant erläutert, um die Erweiterbarkeit dieses Projekts zu verbessern. Weitere Dateien, wie die `package*.json` Dateien und diese `README.md` Datei wurden zur Übersichtlichkeit ausgelassen. Die `package.json` definiert dieses NodeJS Projekt und stellt dabei alle verwendeten Bibliotheken und deren Versionen dar.
 
 ```bash
 momments-backend/
@@ -50,4 +50,4 @@ Hier werden Abhängigkeiten aufgelistet, die nicht über die `package.json` Date
 
 * Für das Projekt wurde NodeJS in der Version 22.11.0 verwendet
 * Zudem wird eine Anbindung zu einem [AWS S3](https://aws.amazon.com/de/s3/) Bucket (Die Dateispeicherkomponente) benötigt
-* Als Datenbank wird PostgreSQL in der Version 16.9 verwendet. Spätere Versionen sollten allerdings auch klappen, solange die Datenbank eine `UTF-8` Kodierung unterstützt.
+* Als Datenbank wird [PostgreSQL](https://www.postgresql.org/) in der Version 16.9 als [Docker](https://www.docker.com/) Container verwendet. Spätere Versionen sollten allerdings auch funktioniert, solange die Datenbank mit einer `UTF-8` Kodierung konfiguriert wird.
