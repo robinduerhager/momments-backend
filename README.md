@@ -2,7 +2,9 @@
 Dieses Projekt enthält jeglichen Quellcode für das Backend des Momments-Prototypen der Masterarbeit von Robin Dürhager mit dem Titel `Konzeption multimodaler Kommunikationsmöglichkeiten zum Austausch zwischen Musikern beim zeit- und ortsunabhängigen, kollaborativen Komponieren`.
 
 > **Hinweis:** Dieses Projekt wird für den Betrieb des Projekts `momments-frontend` benötigt.
-> 
+
+Die Bilder `testuser1.png` und `testuser2.png` im `public` Ordner wurden der Website [Avatar Placeholder](https://avatar-placeholder.iran.liara.run/) entnommen.
+
 ## Aufsetzen des Projekts (Fokus auf Entwicklungsmodus / lokales aufsetzen)
 1. Kopiere dieses Projekt in einen Ordner deiner Wahl
 2. Gehe in das Projekt per `cd momments-backend`
