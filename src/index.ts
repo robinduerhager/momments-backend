@@ -19,7 +19,7 @@ const app = express();
 
 // Add CORS Support. The Frontend / Browserextension will use the same domain of the website on which it runs
 app.use(cors({
-  origin: ['https://www.google.de', 'https://www.soundtrap.com'],
+  origin: ['https://www.google.de', 'https://www.google.com', 'https://www.soundtrap.com'],
 }));
 
 // Body parser
