@@ -8,7 +8,7 @@ This project contains all source code for the backend of the Momments prototype 
 > * [PostgreSQL](https://www.postgresql.org/) Version `16.9` and `UTF-8` encoding (see `docker-compose.yml` for an already configured PostgreSQL container with [Docker](https://www.docker.com/))
 > 
 > **Legal Notice**
-> The images `testuser1.png` and `testuser2.png` in the `public` folder were taken from the website [Avatar Placeholder](https://avatar-placeholder.iran.liara.run/)
+> * The images `testuser1.png` and `testuser2.png` in the `public` folder were taken from the website [Avatar Placeholder](https://avatar-placeholder.iran.liara.run/)
 
 ## Installation for Development
 1. Copy this project to a folder of your choice
