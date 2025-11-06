@@ -21,9 +21,6 @@ This project contains all source code for the backend of the Momments prototype 
 9. Run `npx prisma db seed` to populate the database with test users
 10. Run `npm run dev`
 
-## Projektstruktur
-Im Folgenden wird die Ordnerstruktur dargestellt und über Kommentare kurz und prägnant erläutert, um die Erweiterbarkeit dieses Projekts zu verbessern. Weitere Dateien, wie die `package*.json` Dateien und diese `README.md` Datei wurden zur Übersichtlichkeit ausgelassen. Die `package.json` definiert dieses NodeJS Projekt und stellt dabei alle verwendeten Bibliotheken und deren Versionen dar.
-
 ## Project Structure
 The folder structure is shown below and explained briefly in the comments to improve the extensibility of this project. Other files, such as the `package*.json` files and this `README.md` file, have been omitted for clarity.
 
