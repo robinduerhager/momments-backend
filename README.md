@@ -1,53 +1,54 @@
 # Momments-Backend
-Dieses Projekt enthält jeglichen Quellcode für das Backend des Momments-Prototypen der Masterarbeit von Robin Dürhager mit dem Titel `Konzeption multimodaler Kommunikationsmöglichkeiten zum Austausch zwischen Musikern beim zeit- und ortsunabhängigen, kollaborativen Komponieren`.
+This project contains all source code for the backend of the Momments prototype from [Robin Dürhager's](https://github.com/robinduerhager) [master's thesis](https://doi.org/10.18445/20250727-164533-0) entitled `Designing multimodal communication options for exchange between musicians during collaborative composing independent of time and location.`
 
-> **Hinweis:** Dieses Projekt wird für den Betrieb des Projekts `momments-frontend` benötigt.
+> [!NOTE]
+> **Dependencies of this Project**
+> * [NodeJS 22.11.0](https://nodejs.org/download/release/v22.11.0/)
+> * An [AWS S3](https://aws.amazon.com/de/s3/) instance
+> * [PostgreSQL](https://www.postgresql.org/) Version `16.9` and `UTF-8` encoding (see `docker-compose.yml` for an already configured PostgreSQL container with [Docker](https://www.docker.com/))
+> 
+> **Legal Notice**
+> The images `testuser1.png` and `testuser2.png` in the `public` folder were taken from the website [Avatar Placeholder](https://avatar-placeholder.iran.liara.run/)
 
-Die Bilder `testuser1.png` und `testuser2.png` im `public` Ordner wurden der Website [Avatar Placeholder](https://avatar-placeholder.iran.liara.run/) entnommen.
-
-## Aufsetzen des Projekts (Fokus auf Entwicklungsmodus / lokales aufsetzen)
-1. Kopiere dieses Projekt in einen Ordner deiner Wahl
-2. Gehe in das Projekt per `cd momments-backend`
-3. Kopiere `example.env.development` in `.env` (Gehe sicher, dass die konfigurierte Domain und der Port von `momments-frontend` verwendet wird)
-4. Fülle in `.env` die fehlenden Informationen für die [AWS S3](https://aws.amazon.com/de/s3/) Verbindung aus
-5. Starte über `docker compose up -d momments-db` die PostgreSQL 16.9 Datenbank. Alternativ kann auch eine eigene lokale PostgreSQL Datenbank verwendet werden.
-7. Führe `npm install` aus, um alle nötigen NodeJS Module zu installieren
-8. Führe `npx prisma db push` aus, damit die Datenbanktabellen für das Prisma ORM Schema in der Datenbank erstellt werden
-9. Führe `npx prisma db seed` aus, um die Datenbank mit Testnutzern zu füllen
-10. Führe `npm run dev` aus
+## Installation for Development
+1. Copy this project to a folder of your choice
+2. Go to the project: `cd momments-backend`
+3. Copy `example.env.development` to `.env`
+4. Fill in the missing information for the [AWS S3](https://aws.amazon.com/de/s3/) connection in `.env`
+5. Start your `PostgreSQL 16.9` database e.g. via `docker compose up -d momments-db`
+7. Run `npm install` to install all necessary NodeJS modules
+8. Run `npx prisma db push` to create the database tables for the [Prisma ORM](https://www.prisma.io/) schema in the database
+9. Run `npx prisma db seed` to populate the database with test users
+10. Run `npm run dev`
 
 ## Projektstruktur
 Im Folgenden wird die Ordnerstruktur dargestellt und über Kommentare kurz und prägnant erläutert, um die Erweiterbarkeit dieses Projekts zu verbessern. Weitere Dateien, wie die `package*.json` Dateien und diese `README.md` Datei wurden zur Übersichtlichkeit ausgelassen. Die `package.json` definiert dieses NodeJS Projekt und stellt dabei alle verwendeten Bibliotheken und deren Versionen dar.
 
+## Project Structure
+The folder structure is shown below and explained briefly in the comments to improve the extensibility of this project. Other files, such as the `package*.json` files and this `README.md` file, have been omitted for clarity.
+
 ```bash
 momments-backend/
-├── docker-compose.yml              # Definition des Backends + Datenbank als Docker Container (bspw. für die Produktion)
-├── Dockerfile                      # Packetierung des Backends als Docker Container zum einfachen Deployen auf einem Server
-├── example.env.development         # Template für eine .env zum lokalen Aufsetzen des Projekts im Entwicklungsmodus
-├── example.env.production          # Template für eine .env für den Produktionsmodus, in dem SSL Informationen (private key und fullchain + Domain) verwendet werden müssen
-├── prisma                          # Ordner mit Dateien für das Prisma ORM
-│   ├── migrations                  # SQL Migrationsdateien, die von Prisma ORM erstellt wurden
-│   ├── schema.prisma               # Schema für die Datenbankdefinition, die zu den Migrationsdateien führte
-│   └── seed.ts                     # Seed Skript, um die Datenbank mit Testnutzern zu befüllen
-├── public                          # Ordner mit Dateien, die ohne Authentifizierung zugänglich sein sollten (Avatarbilder der Testnutzer)
+├── docker-compose.yml              # Definition of the backend + database as a Docker container (e.g., for production)
+├── Dockerfile                      # Packaging the backend as a Docker container for simple deployment
+├── example.env.development         # Template for an .env file for setting up the project locally in development mode
+├── example.env.production          # Template for a .env file for production mode, in which SSL information (private key and full chain + domain) must be used.
+├── prisma                          # Folder containing files for Prisma ORM
+│   ├── migrations                  # SQL migration files created by Prisma ORM
+│   ├── schema.prisma               # Schema for the database definition
+│   └── seed.ts                     # Seed script to populate the database with test users
+├── public                          # Folder containing files that should be accessible without authentication (e.g. avatar images of test users)
 │   ├── testuser1.png
 │   └── testuser2.png
-├── src                             # Ordner für die gesamte Geschäftslogik
-│   ├── controller                  # Sammlung jeglicher Controller zur Verwaltung der Datenbank (z.B. DiscussionController)
-│   ├── db                          # Ordner für verschiedene Persistierungsstrategien (S3 Client + Prisma ORM Client für Datenbankanbindung)
-│   ├── index.ts                    # Einstiegspunkt für das Backend
-│   ├── middleware                  # Sammlung von Middleware für das Backend (Authentifizierungsmiddleware für die Abschottung bestimmter Routen, wie z.B. Erstellung von Diskussionen)
-│   ├── routes                      # Sammlung von REST API Routern für die einzelnen Datenbankentitäten 
-│   ├── types                       # Erweiterung des ExpressJS Frameworks, sodass die Authentifizierungsmiddleware an einem Request eine userId anhängen kann, sodass diese nicht von jeder Route neu ermittelt werden muss
-│   └── utils                       # Weitere Helfermodule, wie globale Variablen und Typdefinitionen 
-├── ssl                             # SSL Ordner für das Deployen des Backends im Produktionsmodus, bspw. für einen Nutzertest
-│   └── momments-example-domain.org # Die URL des Backends muss dabei als Ordner im Backendprojekt angelegt werden mit privkey.pem und fullchain.pem für SSL-Verschlüsselung
-└── tsconfig.json                   # TypeScript Konfigurationsdatei
+├── src                             # Folder for all business logic
+│   ├── controller                  # Collection of all controllers for managing the database (e.g. DiscussionController)
+│   ├── db                          # Folders for different persistence strategies (e.g. S3 Client + Prisma ORM Client for database connection)
+│   ├── index.ts                    # Entry point for the backend
+│   ├── middleware                  # Collection of middleware for the backend (e.g. authentication middleware for isolating certain routes, such as creating discussions)
+│   ├── routes                      # Collection of REST API routers for individual database entities
+│   ├── types                       # Extension of the ExpressJS framework so that the authentication middleware can append a userId to a request, eliminating the need to redetermine it for each route.
+│   └── utils                       # Additional utility modules, such as global variables and type definitions  
+├── ssl                             # SSL folder for deploying the backend in production mode
+│   └── momments-example-domain.org # The URL of the backend must be created as a folder in the backend project with privkey.pem and fullchain.pem for SSL encryption.
+└── tsconfig.json                   # TypeScript configuration
 ```
-
-## Abhängigkeiten
-Hier werden Abhängigkeiten aufgelistet, die nicht über die `package.json` Datei direkt einsehbar sind. Für Bibliotheksabhängigkeiten sollte die `package.json` Datei konsultiert werden.
-
-* Für das Projekt wurde NodeJS in der Version 22.11.0 verwendet
-* Zudem wird eine Anbindung zu einem [AWS S3](https://aws.amazon.com/de/s3/) Bucket (Die Dateispeicherkomponente) benötigt
-* Als Datenbank wird [PostgreSQL](https://www.postgresql.org/) in der Version 16.9 als [Docker](https://www.docker.com/) Container verwendet. Spätere Versionen sollten allerdings auch funktioniert, solange die Datenbank mit einer `UTF-8` Kodierung konfiguriert wird.
